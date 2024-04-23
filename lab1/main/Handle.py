@@ -1,15 +1,10 @@
 import re
+from Bookmark import BookmarkManager
 
 
 class CommandHandler:
     def __init__(self, manager):
         self.manager = manager
-
-    def _split_string(self, command):
-        new_command = re.sub(r'@|at', '', command)
-        parts = re.findall(r'"[^"]*"|\S+', new_command)
-        parts = [part.strip('"') for part in parts]
-        return parts
 
     def execute(self, command):
         parts = self._split_string(command)
@@ -18,7 +13,8 @@ class CommandHandler:
             self.handle_add_command(parts, command)
         elif action.startswith("delete"):
             self.handle_delete_command(parts)
-        elif action == "open":
+        elif action == "open" or action == "bookmark" or action == "edit":
+            self.manager = BookmarkManager()
             file_path = parts[1]
             self.manager.load_bookmarks(file_path)
         elif action == "save":
@@ -49,3 +45,9 @@ class CommandHandler:
             self.manager.delete_title(item)
         elif parts[0] == "delete-bookmark":
             self.manager.delete_bookmark(item)
+
+    def _split_string(self, command):
+        new_command = re.sub(r'@|at', '', command)
+        parts = re.findall(r'"[^"]*"|\S+', new_command)
+        parts = [part.strip('"') for part in parts]
+        return parts

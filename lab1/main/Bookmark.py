@@ -81,16 +81,15 @@ class BookmarkManager:
 
     def save_bookmarks(self, file_path):
         with open(file_path, 'w', encoding='utf-8') as file:
+            file.truncate(0)
             self._write_node(self.root, file, 0)
 
     def _write_node(self, node, file, depth):
         if node != self.root:
             if node.is_bookmark:
-                # file.write('  ' * (depth-1) + f'[{node.name}]({node.url})\n')
                 file.write(f'[{node.name}]({node.url})\n')
             else:
-                # file.write('  ' * (depth-1) + f'{"#" * (depth + 1)} {node.name}\n')
-                file.write(f'{"#" * (depth + 1)} {node.name}\n')
+                file.write(f'{"#" * depth} {node.name}\n')
         for child in node.children:
             self._write_node(child, file, depth + 1)
 
