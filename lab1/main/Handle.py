@@ -14,6 +14,13 @@ class CommandHandler:
     def execute(self, command):
         parts = self._split_string(command)
         action = parts[0]
+        if action in ["add-title", "add-bookmark"]:
+            self.handle_add_command(parts, command)
+        elif action.startswith("delete"):
+            self.handle_delete_command(parts)
+
+    def handle_add_command(self, parts, command):
+        action = parts[0]
         if action == "add-title":
             title = parts[1]
             if "at" in command:
@@ -29,3 +36,10 @@ class CommandHandler:
                 self.manager.add_bookmark(title, url, parent_title)
             else:
                 self.manager.add_bookmark(title, url)
+
+    def handle_delete_command(self, parts):
+        item = parts[1]
+        if parts[0] == "delete-title":
+            self.manager.delete_title(item)
+        elif parts[0] == "delete-bookmark":
+            self.manager.delete_bookmark(item)
