@@ -1,10 +1,14 @@
 from Node import Node
+import os
 
 
 class BookmarkManager:
-    def __init__(self):
+    def __init__(self, file_path=None):
         self.root = Node("Root")
         self.nodes = {"Root": self.root}
+        self.file_path = file_path
+        if file_path and os.path.exists(file_path):
+            self.load_bookmarks(file_path)
 
     def add_title(self, title, parent_title="Root"):
         if parent_title in self.nodes:
@@ -49,3 +53,50 @@ class BookmarkManager:
             if child.name in self.nodes:
                 del self.nodes[child.name]
         node.parent.children.remove(node)
+
+    def load_bookmarks(self, file_path):
+        with open(file_path, 'r', encoding='utf-8') as file:
+            current_node = self.root
+            for line in file:
+                line = line.strip()
+                if line.startswith('#'):
+                    # Determine the level of the heading
+                    level = line.count('#')
+                    title = line.strip('# ').strip()
+                    # Navigate up to the correct parent level
+                    while level <= self._get_level(current_node):
+                        current_node = current_node.parent
+                    # Add new node
+                    new_node = Node(title, parent=current_node)
+                    current_node.add_child(new_node)
+                    current_node = new_node
+                    self.nodes[title] = current_node
+                elif line.startswith('['):
+                    # Parse bookmark
+                    title_end = line.index(']')
+                    title = line[1:title_end]
+                    url = line[title_end + 2:-1]
+                    new_node = Node(title, parent=current_node, is_bookmark=True, url=url)
+                    current_node.add_child(new_node)
+
+    def save_bookmarks(self, file_path):
+        with open(file_path, 'w', encoding='utf-8') as file:
+            self._write_node(self.root, file, 0)
+
+    def _write_node(self, node, file, depth):
+        if node != self.root:
+            if node.is_bookmark:
+                # file.write('  ' * (depth-1) + f'[{node.name}]({node.url})\n')
+                file.write(f'[{node.name}]({node.url})\n')
+            else:
+                # file.write('  ' * (depth-1) + f'{"#" * (depth + 1)} {node.name}\n')
+                file.write(f'{"#" * (depth + 1)} {node.name}\n')
+        for child in node.children:
+            self._write_node(child, file, depth + 1)
+
+    def _get_level(self, node):
+        level = 0
+        while node.parent:
+            node = node.parent
+            level += 1
+        return level

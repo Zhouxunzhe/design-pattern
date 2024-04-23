@@ -18,6 +18,12 @@ class CommandHandler:
             self.handle_add_command(parts, command)
         elif action.startswith("delete"):
             self.handle_delete_command(parts)
+        elif action == "open":
+            file_path = parts[1]
+            self.manager.load_bookmarks(file_path)
+        elif action == "save":
+            file_path = parts[1]
+            self.manager.save_bookmarks(file_path)
 
     def handle_add_command(self, parts, command):
         action = parts[0]
