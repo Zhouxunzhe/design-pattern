@@ -1,5 +1,5 @@
-from ..main.Bookmark import BookmarkManager
-from ..main.Handler import CommandHandler
+from ..main.BookmarkManager import BookmarkManager
+from ..main.CommandHandler import CommandHandler
 
 
 class DeleteTest:
