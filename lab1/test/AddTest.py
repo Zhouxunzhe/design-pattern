@@ -1,5 +1,5 @@
 from ..main.Bookmark import BookmarkManager
-from ..main.Handle import CommandHandler
+from ..main.Handler import CommandHandler
 
 
 class AddTest:

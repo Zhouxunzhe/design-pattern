@@ -16,8 +16,10 @@ class BookmarkManager:
             new_node = Node(title, parent=parent_node)
             parent_node.add_child(new_node)
             self.nodes[title] = new_node
+            return new_node
         else:
             print(f"Parent title '{parent_title}' not found.")
+            return None
 
     def add_bookmark(self, title, url, parent_title="Root"):
         if parent_title in self.nodes:
@@ -25,8 +27,10 @@ class BookmarkManager:
             new_node = Node(title, parent=parent_node, is_bookmark=True, url=url)
             parent_node.add_child(new_node)
             self.nodes[title] = new_node
+            return new_node
         else:
             print(f"Parent title '{parent_title}' not found.")
+            return None
 
     def delete_title(self, title):
         if title in self.nodes:
@@ -78,6 +82,7 @@ class BookmarkManager:
                     url = line[title_end + 2:-1]
                     new_node = Node(title, parent=current_node, is_bookmark=True, url=url)
                     current_node.add_child(new_node)
+                    self.nodes[title] = current_node
 
     def save_bookmarks(self, file_path):
         with open(file_path, 'w', encoding='utf-8') as file:

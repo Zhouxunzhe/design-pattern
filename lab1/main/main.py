@@ -1,4 +1,4 @@
-from Handle import CommandHandler
+from Handler import CommandHandler
 from Bookmark import BookmarkManager
 
 if __name__ == "__main__":
@@ -8,7 +8,14 @@ if __name__ == "__main__":
     # add
     command_handler.execute('add-title "课程"')
     command_handler.execute('add-title "参考资料"')
+    # command_handler.execute('undo')
     command_handler.execute('add-title "函数式" at "参考资料"')
+    command_handler.execute('undo')
+    command_handler.execute('undo')
+    command_handler.execute('undo')
+    command_handler.execute('redo')
+    command_handler.execute('redo')
+    command_handler.execute('redo')
     command_handler.execute('add-title "面向对象" at "参考资料"')
     command_handler.execute('add-title "待阅读"')
     command_handler.execute('add-bookmark "elearning"@"https://elearning.fudan.edu.cn/courses" at "课程"')
@@ -19,12 +26,13 @@ if __name__ == "__main__":
         'add-bookmark "Category Theory"@"http://www.appliedcategorytheory.org/what-is-applied-category-theory/" at "待阅读"')
 
     # delete
-    # command_handler.execute('delete-title "参考资料"')
-    # command_handler.execute('delete-bookmark "Markdown Guide"')
+    command_handler.execute('delete-title "参考资料"')
+    command_handler.execute('undo')
+    command_handler.execute('delete-bookmark "Markdown Guide"')
 
     # load/save
-    # command_handler.execute('open "../cloud.bmk"')
-    # command_handler.execute('save "../cloud.bmk"')
+    command_handler.execute('open "../cloud.bmk"')
+    command_handler.execute('save "../cloud.bmk"')
     bookmark_manager = BookmarkManager("../cloud.bmk")
     command_handler = CommandHandler(bookmark_manager)
     command_handler.execute('save "../cloud.bmk"')
