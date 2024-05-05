@@ -1,6 +1,6 @@
-from Node import Node
+from lab1.main.Node import Node
 import os
-from Plugin import PluginManager, SamplePlugin
+from lab1.main.Plugin import PluginManager, CountPlugin, FilePlugin
 
 
 class BookmarkManager:
@@ -18,7 +18,9 @@ class BookmarkManager:
             self.opened_files = set()
         self.current_file = None
         self.plugin_manager = PluginManager()
-        self.plugin_manager.register_plugin(SamplePlugin())
+        self.plugin_manager.register_plugin(CountPlugin(True))
+        self.plugin_manager.register_plugin(FilePlugin(True))
+        self.is_saved = True
 
     def add_title(self, title, parent_title="Root"):
         if parent_title in self.nodes:
@@ -28,8 +30,7 @@ class BookmarkManager:
             self.nodes[title] = new_node
             return new_node
         else:
-            print(f"Parent title '{parent_title}' not found.")
-            return None
+            raise ValueError(f"Parent title '{parent_title}' not found.")
 
     def add_bookmark(self, title, url, parent_title="Root"):
         if parent_title in self.nodes:
@@ -39,8 +40,7 @@ class BookmarkManager:
             self.nodes[title] = new_node
             return new_node
         else:
-            print(f"Parent title '{parent_title}' not found.")
-            return None
+            raise ValueError(f"Parent title '{parent_title}' not found.")
 
     def delete_title(self, title):
         if title in self.nodes:
@@ -48,7 +48,7 @@ class BookmarkManager:
             self._delete_node(node_to_delete)
             del self.nodes[title]
         else:
-            print(f"Title '{title}' not found.")
+            raise ValueError(f"Title '{title}' not found.")
 
     def delete_bookmark(self, title):
         if title in self.nodes:
@@ -57,9 +57,9 @@ class BookmarkManager:
                 self._delete_node(node_to_delete)
                 del self.nodes[title]
             else:
-                print(f"'{title}' is not a bookmark.")
+                raise ValueError(f"'{title}' is not a bookmark.")
         else:
-            print(f"Bookmark '{title}' not found.")
+            raise ValueError(f"Bookmark '{title}' not found.")
 
     def _delete_node(self, node):
         for child in list(node.children):
@@ -92,13 +92,14 @@ class BookmarkManager:
                     url = line[title_end + 2:-1]
                     new_node = Node(title, parent=current_node, is_bookmark=True, url=url)
                     current_node.add_child(new_node)
-                    current_node = new_node
-                    self.nodes[title] = current_node
+                    self.nodes[title] = new_node
 
-    def save_bookmarks(self, file_path):
-        with open(file_path, 'w', encoding='utf-8') as file:
-            file.truncate(0)
-            self._write_node(self.root, file, 0)
+    def save_bookmarks(self, file_path=None):
+        if file_path is not None:
+            with open(file_path, 'w', encoding='utf-8') as file:
+                file.truncate(0)
+                self._write_node(self.root, file, 0)
+        self.is_saved = True
 
     def _write_node(self, node, file, depth):
         if node != self.root:
@@ -129,12 +130,13 @@ class BookmarkManager:
             read_marker = '*' if node.is_read else ''
             extra_info = getattr(node, 'extra_info', '')
             if node.is_bookmark:
-                print(prefix + f"{read_marker}[{node.name}]{extra_info}")
+                print(prefix + f"[{read_marker}{node.name}{extra_info}]")
             else:
                 print(prefix + read_marker + f"{node.name}")
         child_last_nodes = last_nodes + [False]
         num_children = len(node.children)
         for index, child in enumerate(node.children):
+            self.plugin_manager.run_plugins(child)
             child_last_nodes[-1] = index == num_children - 1
             self.show_tree(child, indent + 1, child_last_nodes)
 
@@ -145,14 +147,24 @@ class BookmarkManager:
                 node.mark_as_read()
                 # print(f"Bookmark '{bookmark_name}' has been marked as read. Total reads: {node.read_count}")
             else:
-                print(f"'{bookmark_name}' is not a bookmark.")
+                raise ValueError(f"'{bookmark_name}' is not a bookmark.")
         else:
-            print(f"Bookmark '{bookmark_name}' not found.")
+            raise ValueError(f"Bookmark '{bookmark_name}' not found.")
 
     def open_file(self, file_path):
         file_path = file_path.replace('\\', '/')
+        if not self.is_saved:
+            raise ValueError("Current workspace is not saved. Please save before opening a new file.")
+
+        self.root = Node("Root")  # Reset the root node
+        self.nodes = {"Root": self.root}
+        if os.path.exists(file_path):
+            self.load_bookmarks(file_path)
+        else:
+            print("File does not exist. Starting with a new blank file.")
         self.current_file = file_path
         self.opened_files.add(file_path)
+        self.is_saved = True
         # print(f"Opened file: {file_path}")
 
     def close_file(self, file_path=None):
@@ -162,16 +174,18 @@ class BookmarkManager:
                 if file_path == self.current_file:
                     self.current_file = None
                 self.opened_files.remove(file_path)
+                self.save_bookmarks(file_path)
                 # print(f"Closed specified file: {file_path}")
             else:
-                print(f"File {file_path} was not open.")
+                raise ValueError(f"File {file_path} was not open.")
         else:
             if self.current_file:
                 # print(f"Closing current file: {self.current_file}")
                 self.opened_files.remove(self.current_file)
                 self.current_file = None
+                self.save_bookmarks(file_path)
             else:
-                print("No file is currently open.")
+                raise ValueError("No file is currently open.")
 
     def list_directory_tree(self, path, prefix='', is_root=True):
         if is_root:
@@ -183,6 +197,14 @@ class BookmarkManager:
 
         for index, item in enumerate(items):
             full_path = os.path.join(path, item)
+            if full_path is not None:
+                full_path = full_path.replace('\\', '/')
+            info = 'close'
+            if full_path in self.opened_files:
+                info = 'open'
+            if full_path == self.current_file:
+                info = 'edit'
+            extra_info = self.plugin_manager.run_plugins(info)
             if os.path.isdir(full_path):
                 if index == last_index:
                     print(f"{prefix}└── {item}/")
@@ -193,6 +215,51 @@ class BookmarkManager:
                 self.list_directory_tree(full_path, new_prefix, is_root=False)
             else:
                 if index == last_index:
-                    print(f"{prefix}└── {item}")
+                    print(f"{prefix}└── {item}" + extra_info)
                 else:
-                    print(f"{prefix}├── {item}")
+                    print(f"{prefix}├── {item}" + extra_info)
+
+    def has_title(self, title):
+        return self._dfs_search_title(self.root, title)
+
+    def _dfs_search_title(self, node, title):
+        if node is None:
+            return False
+        if node.name == title:
+            return True
+        for child in node.children:
+            if self._dfs_search_title(child, title):
+                return True
+        return False
+
+    def has_bookmark(self, bookmark_name, parent_title="Root"):
+        if parent_title in self.nodes:
+            return self._dfs_search_bookmark(self.nodes[parent_title], bookmark_name)
+        return False
+
+    def _dfs_search_bookmark(self, node, bookmark_name):
+        if node is None:
+            return False
+        if node.name == bookmark_name and node.is_bookmark:
+            return True
+        for child in node.children:
+            if self._dfs_search_bookmark(child, bookmark_name):
+                return True
+        return False
+
+    def trees_equal(self, other_manager):
+        return self._compare_nodes(self.nodes.get("Root"), other_manager.nodes.get("Root"))
+
+    def _compare_nodes(self, node1, node2):
+        if node1 is None and node2 is None:
+            return True
+        if node1 is None or node2 is None:
+            return False
+        if node1.name != node2.name or node1.is_bookmark != node2.is_bookmark:
+            return False
+        if len(node1.children) != len(node2.children):
+            return False
+        for child1, child2 in zip(node1.children, node2.children):
+            if not self._compare_nodes(child1, child2):
+                return False
+        return True

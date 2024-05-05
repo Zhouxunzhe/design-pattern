@@ -1,4 +1,4 @@
-from Command import Command
+from lab1.main.Command import Command
 
 
 class AddTitleCommand(Command):

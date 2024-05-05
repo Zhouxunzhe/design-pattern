@@ -10,8 +10,11 @@ class Node:
 
     def add_child(self, child):
         if child.is_bookmark:
-            # add a bookmark at the beginning
-            self.children.insert(0, child)
+            cnt = 0
+            for c in self.children:
+                if c.is_bookmark:
+                    cnt += 1
+            self.children.insert(cnt, child)
         else:
             self.children.append(child)
 

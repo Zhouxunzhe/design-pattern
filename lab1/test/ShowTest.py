@@ -1,11 +1,23 @@
 from lab1.main.BookmarkManager import BookmarkManager
 from lab1.main.CommandHandler import CommandHandler
+from io import StringIO
 import unittest
+from unittest.mock import patch
+
+test_content = """├── 课程
+|   └── [elearning]
+├── 参考资料
+|   ├── [Markdown Guide]
+|   ├── 函数式
+|   |   └── [JFP]
+|   └── 面向对象
+└── 待阅读
+    └── [Category Theory]"""
 
 
-class AddTest(unittest.TestCase):
+class ShowTest(unittest.TestCase):
     def __init__(self, methodName):
-        super(AddTest, self).__init__(methodName)
+        super(ShowTest, self).__init__(methodName)
         self.bookmark_manager = BookmarkManager()
         self.command_handler = CommandHandler(self.bookmark_manager)
         self.command_handler.execute('add-title "课程"')
@@ -20,18 +32,11 @@ class AddTest(unittest.TestCase):
         self.command_handler.execute(
             'add-bookmark "Category Theory"@"http://www.appliedcategorytheory.org/what-is-applied-category-theory/" at "待阅读"')
 
-    def test_add_title(self):
-        self.assertTrue(self.bookmark_manager.has_title("课程"))
-        self.assertTrue(self.bookmark_manager.has_title("参考资料"))
-        self.assertTrue(self.bookmark_manager.has_title("函数式"))
-        self.assertTrue(self.bookmark_manager.has_title("面向对象"))
-        self.assertTrue(self.bookmark_manager.has_title("待阅读"))
-
-    def test_add_bookmark(self):
-        self.assertTrue(self.bookmark_manager.has_bookmark("elearning", "课程"))
-        self.assertTrue(self.bookmark_manager.has_bookmark("Markdown Guide", "参考资料"))
-        self.assertTrue(self.bookmark_manager.has_bookmark("JFP", "函数式"))
-        self.assertTrue(self.bookmark_manager.has_bookmark("Category Theory", "待阅读"))
+    def test_show_tree(self):
+        with patch('sys.stdout', new_callable=StringIO) as mock_stdout:
+            self.command_handler.execute('show-tree')
+            output = mock_stdout.getvalue().strip()
+            self.assertEqual(output, test_content)
 
 
 if __name__ == "__main__":
