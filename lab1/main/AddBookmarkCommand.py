@@ -2,7 +2,7 @@ from lab1.main.Command import Command
 
 
 class AddBookmarkCommand(Command):
-    def __init__(self, manager, title, url, parent_title="Root"):
+    def __init__(self, manager, title, url, parent_title="个人收藏"):
         self.manager = manager
         self.title = title
         self.url = url

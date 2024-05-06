@@ -5,8 +5,8 @@ from lab1.main.Plugin import PluginManager, CountPlugin, FilePlugin
 
 class BookmarkManager:
     def __init__(self, file_path=None, opened_files=None):
-        self.root = Node("Root")
-        self.nodes = {"Root": self.root}
+        self.root = Node("个人收藏")
+        self.nodes = {"个人收藏": self.root}
         if file_path is not None:
             file_path = file_path.replace('\\', '/')
         self.file_path = file_path
@@ -22,7 +22,7 @@ class BookmarkManager:
         self.plugin_manager.register_plugin(FilePlugin(True))
         self.is_saved = True
 
-    def add_title(self, title, parent_title="Root"):
+    def add_title(self, title, parent_title="个人收藏"):
         if parent_title in self.nodes:
             parent_node = self.nodes[parent_title]
             new_node = Node(title, parent=parent_node)
@@ -32,7 +32,7 @@ class BookmarkManager:
         else:
             raise ValueError(f"Parent title '{parent_title}' not found.")
 
-    def add_bookmark(self, title, url, parent_title="Root"):
+    def add_bookmark(self, title, url, parent_title="个人收藏"):
         if parent_title in self.nodes:
             parent_node = self.nodes[parent_title]
             new_node = Node(title, parent=parent_node, is_bookmark=True, url=url)
@@ -122,8 +122,10 @@ class BookmarkManager:
             node = self.root
         if last_nodes is None:
             last_nodes = []
-        if node.name != "Root":
-            prefix = ''
+        if node == self.root:
+            print(f"└── {node.name}")
+        else:
+            prefix = "    "
             for is_last in last_nodes[:-1]:
                 prefix += '    ' if is_last else '|   '
             prefix += '└── ' if last_nodes and last_nodes[-1] else '├── '
@@ -156,8 +158,8 @@ class BookmarkManager:
         if not self.is_saved:
             raise ValueError("Current workspace is not saved. Please save before opening a new file.")
 
-        self.root = Node("Root")  # Reset the root node
-        self.nodes = {"Root": self.root}
+        self.root = Node("个人收藏")  # Reset the root node
+        self.nodes = {"个人收藏": self.root}
         if os.path.exists(file_path):
             self.load_bookmarks(file_path)
         else:
@@ -232,7 +234,7 @@ class BookmarkManager:
                 return True
         return False
 
-    def has_bookmark(self, bookmark_name, parent_title="Root"):
+    def has_bookmark(self, bookmark_name, parent_title="个人收藏"):
         if parent_title in self.nodes:
             return self._dfs_search_bookmark(self.nodes[parent_title], bookmark_name)
         return False
@@ -248,7 +250,7 @@ class BookmarkManager:
         return False
 
     def trees_equal(self, other_manager):
-        return self._compare_nodes(self.nodes.get("Root"), other_manager.nodes.get("Root"))
+        return self._compare_nodes(self.nodes.get("个人收藏"), other_manager.nodes.get("个人收藏"))
 
     def _compare_nodes(self, node1, node2):
         if node1 is None and node2 is None:

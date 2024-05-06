@@ -87,8 +87,8 @@
 #### 方法：
 
 - `__init__(self, file_path=None, opened_files=None)`: 初始化方法，初始化属性，加载书签文件并注册插件。
-- `add_title(self, title, parent_title="Root")`: 添加标题节点到指定父节点下。
-- `add_bookmark(self, title, url, parent_title="Root")`: 添加书签节点到指定父节点下。
+- `add_title(self, title, parent_title="个人收藏")`: 添加标题节点到指定父节点下。
+- `add_bookmark(self, title, url, parent_title="个人收藏")`: 添加书签节点到指定父节点下。
 - `delete_title(self, title)`: 删除指定标题节点及其子节点。
 - `delete_bookmark(self, title)`: 删除指定书签节点。
 - `_delete_node(self, node)`: 递归删除节点及其子节点的辅助方法。
@@ -102,7 +102,7 @@
 - `close_file(self, file_path=None)`: 关闭指定文件或当前文件。
 - `list_directory_tree(self, path, prefix='', is_root=True)`: 以树形结构显示目录树。
 - `has_title(self, title)`: 判断是否存在指定标题。
-- `has_bookmark(self, bookmark_name, parent_title="Root")`: 判断是否存在指定书签。
+- `has_bookmark(self, bookmark_name, parent_title="个人收藏")`: 判断是否存在指定书签。
 - `trees_equal(self, other_manager)`: 判断两个书签管理器的书签树是否相等。
 
 ### 2. Plugin 抽象类
@@ -216,12 +216,12 @@
 - `manager`: `BookmarkManager` 对象，表示书签管理器。
 - `title`: 字符串，表示要添加的书签标题。
 - `url`: 字符串，表示要添加的书签 URL 地址。
-- `parent_title`: 字符串，表示要添加书签的父节点标题，默认为 "Root"。
+- `parent_title`: 字符串，表示要添加书签的父节点标题，默认为 "个人收藏"。
 - `node`: Node 对象，表示添加的书签节点。
 
 #### 方法：
 
-- `__init__(self, manager, title, url, parent_title="Root")`: 初始化方法，接受书签管理器、书签标题、URL 地址和父节点标题作为参数。
+- `__init__(self, manager, title, url, parent_title="个人收藏")`: 初始化方法，接受书签管理器、书签标题、URL 地址和父节点标题作为参数。
 - `execute(self)`: 执行添加书签的操作，调用书签管理器的 `add_bookmark` 方法添加书签，并返回添加的书签节点。
 - `undo(self)`: 撤销添加书签的操作，如果添加过书签，则调用书签管理器的 `delete_bookmark` 方法删除该书签。
 
@@ -231,12 +231,12 @@
 
 - `manager`: `BookmarkManager` 对象，表示书签管理器。
 - `title`: 字符串，表示要添加的标题。
-- `parent_title`: 字符串，表示要添加标题的父节点标题，默认为 "Root"。
+- `parent_title`: 字符串，表示要添加标题的父节点标题，默认为 "个人收藏"。
 - `node`: Node 对象，表示添加的标题节点。
 
 #### 方法：
 
-- `__init__(self, manager, title, parent_title="Root")`: 初始化方法，接受书签管理器、标题和父节点标题作为参数。
+- `__init__(self, manager, title, parent_title="个人收藏")`: 初始化方法，接受书签管理器、标题和父节点标题作为参数。
 - `execute(self)`: 执行添加标题的操作，调用书签管理器的 `add_title` 方法添加标题，并返回添加的标题节点。
 - `undo(self)`: 撤销添加标题的操作，如果添加过标题，则调用书签管理器的 `delete_title` 方法删除该标题。
 

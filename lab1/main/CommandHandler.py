@@ -17,13 +17,13 @@ class CommandHandler:
         action = parts[0]
         if action == "add-title":
             title = parts[1].strip('"')
-            parent_title = parts[2] if "at" in command_str else "Root"
+            parent_title = parts[2] if "at" in command_str else "个人收藏"
             command = AddTitleCommand(self.manager, title, parent_title)
             self.manager.is_saved = False
         elif action == "add-bookmark":
             title = parts[1]
             url = parts[2]
-            parent_title = parts[3] if "at" in command_str else "Root"
+            parent_title = parts[3] if "at" in command_str else "个人收藏"
             command = AddBookmarkCommand(self.manager, title, url, parent_title)
             self.manager.is_saved = False
         elif action == "delete-title" or action == "delete-bookmark":

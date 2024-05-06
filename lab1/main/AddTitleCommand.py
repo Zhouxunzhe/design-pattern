@@ -2,7 +2,7 @@ from lab1.main.Command import Command
 
 
 class AddTitleCommand(Command):
-    def __init__(self, manager, title, parent_title="Root"):
+    def __init__(self, manager, title, parent_title="个人收藏"):
         self.manager = manager
         self.title = title
         self.parent_title = parent_title

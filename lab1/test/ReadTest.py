@@ -4,35 +4,38 @@ from io import StringIO
 import unittest
 from unittest.mock import patch
 
-init_tree = """├── 课程
-|   └── [elearning]
-├── 参考资料
-|   ├── [Markdown Guide]
-|   ├── 函数式
-|   |   └── [JFP]
-|   └── 面向对象
-└── 待阅读
-    └── [Category Theory]"""
+init_tree = """└── 个人收藏
+    ├── 课程
+    |   └── [elearning]
+    ├── 参考资料
+    |   ├── [Markdown Guide]
+    |   ├── 函数式
+    |   |   └── [JFP]
+    |   └── 面向对象
+    └── 待阅读
+        └── [Category Theory]"""
 
-once_tree = """├── 课程
-|   └── [*elearning[1]]
-├── 参考资料
-|   ├── [Markdown Guide]
-|   ├── 函数式
-|   |   └── [JFP]
-|   └── 面向对象
-└── 待阅读
-    └── [Category Theory]"""
+once_tree = """└── 个人收藏
+    ├── 课程
+    |   └── [*elearning[1]]
+    ├── 参考资料
+    |   ├── [Markdown Guide]
+    |   ├── 函数式
+    |   |   └── [JFP]
+    |   └── 面向对象
+    └── 待阅读
+        └── [Category Theory]"""
 
-twice_tree = """├── 课程
-|   └── [*elearning[2]]
-├── 参考资料
-|   ├── [Markdown Guide]
-|   ├── 函数式
-|   |   └── [JFP]
-|   └── 面向对象
-└── 待阅读
-    └── [Category Theory]"""
+twice_tree = """└── 个人收藏
+    ├── 课程
+    |   └── [*elearning[2]]
+    ├── 参考资料
+    |   ├── [Markdown Guide]
+    |   ├── 函数式
+    |   |   └── [JFP]
+    |   └── 面向对象
+    └── 待阅读
+        └── [Category Theory]"""
 
 
 class ReadTest(unittest.TestCase):

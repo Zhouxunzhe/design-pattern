@@ -4,15 +4,16 @@ from io import StringIO
 import unittest
 from unittest.mock import patch
 
-test_content = """├── 课程
-|   └── [elearning]
-├── 参考资料
-|   ├── [Markdown Guide]
-|   ├── 函数式
-|   |   └── [JFP]
-|   └── 面向对象
-└── 待阅读
-    └── [Category Theory]"""
+test_content = """└── 个人收藏
+    ├── 课程
+    |   └── [elearning]
+    ├── 参考资料
+    |   ├── [Markdown Guide]
+    |   ├── 函数式
+    |   |   └── [JFP]
+    |   └── 面向对象
+    └── 待阅读
+        └── [Category Theory]"""
 
 
 class ShowTest(unittest.TestCase):

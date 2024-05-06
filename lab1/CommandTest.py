@@ -2,9 +2,8 @@ from lab1 import command_handler
 
 if __name__ == "__main__":
     # add
-    command_handler.execute('add-title "个人收藏"')
-    command_handler.execute('add-title "课程" at "个人收藏"')
-    command_handler.execute('add-title "参考资料" at "个人收藏"')
+    command_handler.execute('add-title "课程"')
+    command_handler.execute('add-title "参考资料"')
     # command_handler.execute('undo')
     command_handler.execute('add-title "函数式" at "参考资料"')
     command_handler.execute('save "bookmarks/cloud1.bmk"')
@@ -15,7 +14,7 @@ if __name__ == "__main__":
     command_handler.execute('redo')
     command_handler.execute('redo')
     command_handler.execute('add-title "OOP" at "参考资料"')
-    command_handler.execute('add-title "待阅读" at "个人收藏"')
+    command_handler.execute('add-title "待阅读"')
     command_handler.execute('add-bookmark "elearning"@"https://elearning.fudan.edu.cn/courses" at "课程"')
     command_handler.execute('add-bookmark "Markdown Guide"@"https://www.markdownguide.org" at "参考资料"')
     command_handler.execute('add-bookmark "Markdown 数学公式"@"https://www.markdownmath.org" at "参考资料"')
