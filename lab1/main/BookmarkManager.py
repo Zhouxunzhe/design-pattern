@@ -189,7 +189,7 @@ class BookmarkManager:
             else:
                 raise ValueError("No file is currently open.")
 
-    def list_directory_tree(self, path, prefix='', is_root=True):
+    def list_directory_tree(self, path, prefix='', is_root=True, depth=0):
         if is_root:
             print(f"└── {os.path.basename(path)}/")
             prefix = "    "
@@ -197,29 +197,30 @@ class BookmarkManager:
         items.sort()
         last_index = len(items) - 1
 
-        for index, item in enumerate(items):
-            full_path = os.path.join(path, item)
-            if full_path is not None:
-                full_path = full_path.replace('\\', '/')
-            info = 'close'
-            if full_path in self.opened_files:
-                info = 'open'
-            if full_path == self.current_file:
-                info = 'edit'
-            extra_info = self.plugin_manager.run_plugins(info)
-            if os.path.isdir(full_path):
-                if index == last_index:
-                    print(f"{prefix}└── {item}/")
-                    new_prefix = prefix + "    "
+        if depth <= 1:
+            for index, item in enumerate(items):
+                full_path = os.path.join(path, item)
+                if full_path is not None:
+                    full_path = full_path.replace('\\', '/')
+                info = 'close'
+                if full_path in self.opened_files:
+                    info = 'open'
+                if full_path == self.current_file:
+                    info = 'edit'
+                extra_info = self.plugin_manager.run_plugins(info)
+                if os.path.isdir(full_path):
+                    if index == last_index:
+                        print(f"{prefix}└── {item}/")
+                        new_prefix = prefix + "    "
+                    else:
+                        print(f"{prefix}├── {item}/")
+                        new_prefix = prefix + "|   "
+                    self.list_directory_tree(full_path, new_prefix, is_root=False, depth=depth+1)
                 else:
-                    print(f"{prefix}├── {item}/")
-                    new_prefix = prefix + "|   "
-                self.list_directory_tree(full_path, new_prefix, is_root=False)
-            else:
-                if index == last_index:
-                    print(f"{prefix}└── {item}" + extra_info)
-                else:
-                    print(f"{prefix}├── {item}" + extra_info)
+                    if index == last_index:
+                        print(f"{prefix}└── {item}" + extra_info)
+                    else:
+                        print(f"{prefix}├── {item}" + extra_info)
 
     def has_title(self, title):
         return self._dfs_search_title(self.root, title)
